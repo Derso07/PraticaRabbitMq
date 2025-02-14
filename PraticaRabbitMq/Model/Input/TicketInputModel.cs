@@ -2,11 +2,13 @@
 
 namespace PraticaRabbitMq.Model.Input
 {
-    public class PaymentInputModel
+    public class TicketInputModel
     {
         public Guid Id { get; set; }
-        public DateTime DatePayment { get; set; }
+        public string PassengerName { get; set; }
+        public decimal Price { get; set; }
+        public int Seat { get; set; }
         public PaymentType TypePayment { get; set; }
-        public bool Status { get; set; }
+
     }
 }

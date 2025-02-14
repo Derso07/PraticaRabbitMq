@@ -1,10 +1,13 @@
 using MassTransit;
 using PraticaRabbitMq.Bus;
 using PraticaRabbitMq.Interface;
+using PraticaRabbitMq.Repository;
+using PraticaRabbitMq.Subscribers;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddScoped<IBusService, MassTransitBusService>();
+builder.Services.AddScoped<ITicketService, TicketRepository>();
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -13,12 +16,14 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMassTransit(x =>
 {
-    // A Transport
+    x.AddConsumer<TicketCreatedSubscriber>();
+
     x.UsingRabbitMq((context, cfg) =>
     {   
         cfg.ConfigureEndpoints(context);
     });
 });
+
 
 var app = builder.Build();
 

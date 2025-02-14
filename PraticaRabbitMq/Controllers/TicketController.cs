@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using PraticaRabbitMq.Interface;
+using PraticaRabbitMq.Model.Created;
+using PraticaRabbitMq.Model.Input;
 
 namespace PraticaRabbitMq.Controllers
 {
@@ -9,15 +10,26 @@ namespace PraticaRabbitMq.Controllers
     public class TicketController : ControllerBase
     {
         private readonly IBusService _busService;
-        public TicketController(IBusService busService) 
+        private readonly ITicketService _ticketService;
+        public TicketController(IBusService busService, ITicketService ticketService)
         {
             _busService = busService;
+            _ticketService = ticketService;
         }
 
         [HttpPost]
-        public Task<IActionResult> Post() 
+        public async Task<IActionResult> Post(TicketInputModel model)
         {
+            var @event = new TicketCreatedModel(model.Id, model.PassengerName, model.Price, model.Seat, model.TypePayment);
 
+            await _busService.Publish(@event);
+
+            return NoContent();
+        }
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
+        {
+            return Ok(_ticketService.GetAll());
         }
     }
 }
